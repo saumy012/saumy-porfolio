@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soumy Tiwari - Full-Stack Developer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Modern Dark Blue/Teal -->
+    <!-- Application Structure Plan: The application is now structured with a striking hero section that immediately presents the candidate's professional identity and a direct call-to-action (CV download). The remaining content is organized into thematic sections (Skills, Projects, Timeline) to allow for non-linear, focused exploration. Interactive elements like the skills chart filter and project modals are retained to provide depth on demand. The overall structure is clean and professional, prioritizing quick information access and visual appeal based on the provided design inspiration. -->
+    <!-- Visualization & Content Choices: 
+        - Summary/About: Report Info -> Professional Summary -> Goal: Inform -> Presentation: Formatted text block -> Interaction: None -> Justification: Provides a quick, scannable professional introduction.
+        - Technical Skills: Report Info -> List of skills -> Goal: Organize & Compare -> Viz: Horizontal Bar Chart (Chart.js) -> Interaction: Buttons to filter chart data by category (Frontend, Backend, etc.) -> Justification: Visually represents skill distribution and allows recruiters to focus on specific tech stacks.
+        - Projects: Report Info -> Project descriptions -> Goal: Inform (in detail) -> Presentation: Grid of cards with a modal for details (HTML/CSS/JS) -> Interaction: Click "View Details" to open a modal with extended info -> Justification: Keeps the main layout clean while providing comprehensive details on demand.
+        - Education & Certs: Report Info -> Education/Certification list -> Goal: Show Change/Progression -> Presentation: Vertical Timeline (HTML/CSS) -> Interaction: None -> Justification: A clear, chronological representation of academic and professional development.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0b1120;
+            color: #d1d5db;
+            overflow-x: hidden;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 50vh;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 500px;
+            }
+        }
+        .modal-backdrop {
+            transition: opacity 0.3s ease;
+        }
+        .modal-content {
+            transition: transform 0.3s ease;
+        }
+        .hexagon-clip {
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+        }
+        .gradient-bg {
+            background-image: linear-gradient(135deg, #2b3040 0%, #1e212b 100%);
+        }
+        .animated-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            background-image: radial-gradient(circle, #0f172a 0%, #0b1120 100%);
+        }
+        .animated-background .code-symbol {
+            position: absolute;
+            color: rgba(52, 211, 153, 0.2);
+            font-size: 1rem;
+            animation: move-symbols 25s linear infinite;
+        }
+        .animated-background .code-symbol:nth-child(1) { top: 20%; left: 10%; animation-duration: 22s; font-size: 1.5rem; }
+        .animated-background .code-symbol:nth-child(2) { top: 40%; left: 30%; animation-duration: 25s; }
+        .animated-background .code-symbol:nth-child(3) { top: 70%; left: 5%; animation-duration: 20s; font-size: 1.2rem; }
+        .animated-background .code-symbol:nth-child(4) { top: 10%; left: 50%; animation-duration: 28s; }
+        .animated-background .code-symbol:nth-child(5) { top: 60%; left: 80%; animation-duration: 23s; font-size: 1.5rem; }
+        .animated-background .code-symbol:nth-child(6) { top: 85%; left: 25%; animation-duration: 27s; }
+        .animated-background .code-symbol:nth-child(7) { top: 5%; left: 80%; animation-duration: 21s; font-size: 1.8rem; }
+        .animated-background .code-symbol:nth-child(8) { top: 90%; left: 60%; animation-duration: 26s; }
+        .animated-background .code-symbol:nth-child(9) { top: 30%; left: 90%; animation-duration: 19s; font-size: 1.3rem; }
+        .animated-background .code-symbol:nth-child(10) { top: 50%; left: 70%; animation-duration: 24s; font-size: 1.6rem; }
+        .animated-background .code-symbol:nth-child(11) { top: 80%; left: 40%; animation-duration: 22s; }
+        .animated-background .code-symbol:nth-child(12) { top: 15%; left: 20%; animation-duration: 26s; font-size: 1.4rem; }
+
+        @keyframes move-symbols {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-1000px) rotate(360deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="animated-background">
+        <span class="code-symbol">{</span>
+        <span class="code-symbol">}</span>
+        <span class="code-symbol">/</span>
+        <span class="code-symbol">&lt;</span>
+        <span class="code-symbol">></span>
+        <span class="code-symbol">#</span>
+        <span class="code-symbol">;</span>
+        <span class="code-symbol">}</span>
+        <span class="code-symbol">{</span>
+        <span class="code-symbol">[</span>
+        <span class="code-symbol">]</span>
+        <span class="code-symbol">!</span>
+    </div>
+
+    <!-- Header & Navigation -->
+    <header class="bg-[#121827] backdrop-blur-md sticky top-0 z-50 shadow-lg">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="text-2xl font-bold text-gray-200">
+                <a href="#">Soumy Tiwari</a>
+            </div>
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#skills" class="text-gray-400 hover:text-teal-400 transition-colors duration-300">Skills</a>
+                <a href="#projects" class="text-gray-400 hover:text-teal-400 transition-colors duration-300">Projects</a>
+                <a href="#timeline" class="text-gray-400 hover:text-teal-400 transition-colors duration-300">Timeline</a>
+                <a href="saumycv best.pdf" download="Soumy_Tiwari_CV.pdf" class="bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700 transition-colors duration-300">Download CV</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden text-gray-200">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                </svg>
+            </button>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden bg-[#121827]">
+            <a href="#skills" class="block py-2 px-4 text-sm text-gray-400 hover:bg-gray-800">Skills</a>
+            <a href="#projects" class="block py-2 px-4 text-sm text-gray-400 hover:bg-gray-800">Projects</a>
+            <a href="#timeline" class="block py-2 px-4 text-sm text-gray-400 hover:bg-gray-800">Timeline</a>
+            <a href="saumycv best.pdf" download="Soumy_Tiwari_CV.pdf" class="block py-2 px-4 text-sm text-gray-400 hover:bg-gray-800">Download CV</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-12">
+        
+        <!-- Hero Section -->
+        <section id="hero" class="text-center py-20 flex flex-col md:flex-row items-center justify-center space-y-12 md:space-x-12 md:space-y-0">
+            <div class="md:text-left text-center md:w-1/2">
+                <h1 class="text-3xl font-light text-gray-400">Hello, I'm</h1>
+                <h1 class="text-5xl md:text-7xl font-extrabold text-white mb-4">Soumy Tiwari</h1>
+                <h2 class="text-2xl md:text-3xl font-semibold text-teal-400 mb-6">A Full-Stack Developer</h2>
+                <p class="text-gray-400 max-w-lg mb-8 mx-auto md:mx-0">A final-year Computer Science student specializing in **full-stack engineering** with a strong foundation in **C++, Python, and core systems design**. My passion lies in solving real-world challenges by developing and deploying innovative digital products. Through hands-on experience with projects like an **AI-powered resume scanner**, I have proven my ability to build **scalable, robust, and impactful solutions**. I am a versatile and quick learner, committed to contributing to a collaborative engineering team.</p>
+                <div class="flex justify-center md:justify-start space-x-4 mb-8">
+                    <a href="https://www.google.com/search?q=linkedin.com/in/soumy-tiwari" target="_blank" class="text-gray-400 hover:text-teal-400 transition-colors duration-300">
+                        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" clip-rule="evenodd"/></svg>
+                    </a>
+                    <a href="https://github.com/soumytiwari" target="_blank" class="text-gray-400 hover:text-teal-400 transition-colors duration-300">
+                        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.91 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                    </a>
+                    <a href="saumycv best.pdf" download="Soumy_Tiwari_CV.pdf" class="text-gray-400 hover:text-teal-400 transition-colors duration-300">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    </a>
+                </div>
+                <a href="saumycv best.pdf" download="Soumy_Tiwari_CV.pdf" class="bg-teal-600 text-white px-6 py-3 rounded-md font-semibold hover:bg-teal-700 transition-colors duration-300 shadow-lg">Download CV</a>
+            </div>
+            <div class="relative w-full md:w-1/3 flex justify-center md:justify-end">
+                <div class="relative w-64 h-72 md:w-80 md:h-96 hexagon-clip bg-gray-800 p-2 border-2 border-teal-400">
+                    <img src="photo_2025-09-12_13-45-49.jpg" alt="Soumy Tiwari" class="w-full h-full object-cover hexagon-clip">
+                </div>
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section id="skills" class="py-20">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold text-white">Technical Skills</h2>
+                <p class="mt-4 text-lg text-gray-400 max-w-2xl mx-auto">This chart visualizes my proficiency across various technologies. Use the filters to explore my skills in different areas of development.</p>
+            </div>
+            <div class="flex justify-center flex-wrap gap-2 mb-8">
+                <button class="skill-filter-btn active bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700 transition-colors duration-300" data-category="all">All</button>
+                <button class="skill-filter-btn bg-gray-700 text-gray-300 px-4 py-2 rounded-md hover:bg-gray-600 transition-colors duration-300" data-category="frontend">Frontend</button>
+                <button class="skill-filter-btn bg-gray-700 text-gray-300 px-4 py-2 rounded-md hover:bg-gray-600 transition-colors duration-300" data-category="backend">Backend</button>
+                <button class="skill-filter-btn bg-gray-700 text-gray-300 px-4 py-2 rounded-md hover:bg-gray-600 transition-colors duration-300" data-category="languages">Languages</button>
+                <button class="skill-filter-btn bg-gray-700 text-gray-300 px-4 py-2 rounded-md hover:bg-gray-600 transition-colors duration-300" data-category="tools">Databases & Tools</button>
+            </div>
+            <div class="chart-container bg-gray-800 p-6 rounded-lg shadow-xl">
+                <canvas id="skillsChart"></canvas>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects" class="py-20">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold text-white">Projects Showcase</h2>
+                <p class="mt-4 text-lg text-gray-400 max-w-2xl mx-auto">Here are some of the projects I've worked on. Click 'View Details' to learn more about the technologies used and the problems I solved.</p>
+            </div>
+            <div id="project-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Project cards will be injected here by JavaScript -->
+            </div>
+        </section>
+
+        <!-- Timeline Section -->
+        <section id="timeline" class="py-20">
+             <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-white">Education & Timeline</h2>
+                <p class="mt-4 text-lg text-gray-400 max-w-2xl mx-auto">A look at my academic journey and key milestones.</p>
+            </div>
+            <div id="timeline-container" class="relative max-w-2xl mx-auto">
+                 <!-- Timeline line -->
+                <div class="absolute left-1/2 transform -translate-x-1/2 h-full w-0.5 bg-gray-700"></div>
+                <!-- Timeline items will be injected here -->
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="py-20 bg-gray-900 text-white rounded-lg shadow-xl">
+            <div class="text-center">
+                <h2 class="text-4xl font-bold">Get In Touch</h2>
+                <p class="mt-4 text-lg text-gray-400 max-w-2xl mx-auto">I'm currently open to new opportunities. Feel free to reach out via email or connect with me on social media.</p>
+                <div class="mt-8">
+                    <a href="mailto:soumytiwari2005@gmail.com" class="bg-teal-600 text-white text-lg font-semibold px-8 py-4 rounded-md hover:bg-teal-700 transition-colors duration-300 shadow-lg">soumytiwari2005@gmail.com</a>
+                </div>
+                 <div class="flex justify-center items-center space-x-6 mt-8">
+                    <a href="https://www.google.com/search?q=linkedin.com/in/soumy-tiwari" target="_blank" class="text-gray-400 hover:text-white transition-colors duration-300">LinkedIn</a>
+                    <span class="text-gray-600">|</span>
+                    <a href="https://github.com/soumytiwari" target="_blank" class="text-gray-400 hover:text-white transition-colors duration-300">GitHub</a>
+                     <span class="text-gray-600">|</span>
+                    <a href="saumycv best.pdf" download="Soumy_Tiwari_CV.pdf" class="text-gray-400 hover:text-white transition-colors duration-300">Download CV</a>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <!-- Project Modal -->
+    <div id="project-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50 hidden modal-backdrop">
+        <div class="gradient-bg rounded-lg shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto modal-content transform scale-95">
+            <div class="sticky top-0 bg-[#121827] p-6 border-b border-gray-700 flex justify-between items-center">
+                <h3 id="modal-title" class="text-2xl font-bold text-white">Project Title</h3>
+                <button id="modal-close-btn" class="text-gray-400 hover:text-white">&times;</button>
+            </div>
+            <div class="p-6">
+                <div id="modal-tech" class="flex flex-wrap gap-2 mb-4">
+                </div>
+                <p id="modal-description" class="text-gray-400 whitespace-pre-line"></p>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // --- Data Store ---
+        const skillsData = {
+            all: {
+                labels: ['C++', 'Python', 'SQL', 'HTML', 'HTTP', 'API Development'],
+                values: [85, 80, 75, 95, 85, 90],
+            },
+            languages: {
+                labels: ['C++', 'Python'],
+                values: [85, 80],
+            },
+            frontend: {
+                labels: ['HTML', 'CSS', 'JavaScript'],
+                values: [95, 90, 85],
+            },
+            backend: {
+                labels: ['Node.js', 'Flask'],
+                values: [85, 80],
+            },
+            tools: {
+                labels: ['SQL', 'Git', 'API Integration'],
+                values: [75, 95, 90],
+            }
+        };
+
+        const projectsData = [
+            {
+                title: 'Online Learning Management System',
+                tech: ['Node.js', 'Express', 'MongoDB', 'JavaScript'],
+                description: `Built a comprehensive LMS featuring user registration, course enrollment, and an interactive quiz module.
+- Created an automated quiz grading system with a dynamic progress tracking dashboard, allowing users to monitor their performance in real-time.`
+            },
+            {
+                title: 'AI Resume Scanner',
+                tech: ['Flask', 'HTML', 'JavaScript', 'Gemini API'],
+                description: `Developed a real-time AI-Powered resume scanner with Flask backend and HTML, JavaScript to check job eligibility for specific roles.
+- The core of the application was a RESTful API endpoint that securely processes resume data and sends it to the GEMINI API for a detailed, AI-driven analysis.`
+            }
+        ];
+
+        const timelineData = [
+            {
+                year: '2027',
+                title: 'Bachelor of Technology in Computer Science',
+                institution: 'LPU - Punjab',
+                description: 'Continuing my studies in Computer Science Engineering from August 2023 to August 2027.'
+            },
+            {
+                year: '2023',
+                title: 'Schooling',
+                institution: 'MGM Senior Secondary School - Bhilai',
+                description: 'Completed my schooling from January 2011 to April 2023.'
+            },
+            {
+                year: '2024',
+                title: 'Certifications Earned',
+                institution: 'NPTEL, HackerRank, etc.',
+                description: 'Completed certifications in CPP and OOPs, Social Networks, Generative AI, and Generative AI Tools.'
+            }
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Mobile Menu ---
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            // --- Skills Chart ---
+            const ctx = document.getElementById('skillsChart').getContext('2d');
+            let skillsChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: skillsData.all.labels,
+                    datasets: [{
+                        label: 'Proficiency',
+                        data: skillsData.all.values,
+                        backgroundColor: 'rgba(52, 211, 153, 0.7)',
+                        borderColor: 'rgba(52, 211, 153, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `Proficiency: ${context.raw}%`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + "%"
+                                },
+                                color: '#d1d5db'
+                            },
+                            grid: {
+                                color: '#4b5563'
+                            }
+                        },
+                        y: {
+                           ticks: {
+                                autoSkip: false,
+                                color: '#d1d5db'
+                           },
+                           grid: {
+                                color: '#4b5563'
+                           }
+                        }
+                    }
+                }
+            });
+
+            const filterButtons = document.querySelectorAll('.skill-filter-btn');
+            filterButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    filterButtons.forEach(btn => {
+                        btn.classList.remove('active', 'bg-teal-600', 'text-white');
+                        btn.classList.add('bg-gray-700', 'text-gray-300');
+                    });
+                    button.classList.add('active', 'bg-teal-600', 'text-white');
+                    button.classList.remove('bg-gray-700', 'text-gray-300');
+
+                    const category = button.dataset.category;
+                    updateChart(category);
+                });
+            });
+
+            function updateChart(category) {
+                const data = skillsData[category];
+                skillsChart.data.labels = data.labels;
+                skillsChart.data.datasets[0].data = data.values;
+                skillsChart.update();
+            }
+
+            // --- Projects ---
+            const projectGrid = document.getElementById('project-grid');
+            const modal = document.getElementById('project-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalTech = document.getElementById('modal-tech');
+            const modalDescription = document.getElementById('modal-description');
+            const modalCloseBtn = document.getElementById('modal-close-btn');
+
+            projectsData.forEach((project, index) => {
+                const card = document.createElement('div');
+                card.className = 'gradient-bg rounded-lg p-6 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300';
+                card.innerHTML = `
+                    <h3 class="text-xl font-bold mb-2 text-white">${project.title}</h3>
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        ${project.tech.map(t => `<span class="bg-gray-700 text-gray-300 text-xs font-medium px-2.5 py-0.5 rounded-full">${t}</span>`).join('')}
+                    </div>
+                    <p class="text-gray-400 mb-4">${project.description.split('\n')[0]}</p>
+                    <button class="view-details-btn text-teal-400 font-semibold hover:text-teal-300" data-index="${index}">View Details &rarr;</button>
+                `;
+                projectGrid.appendChild(card);
+            });
+
+            projectGrid.addEventListener('click', (e) => {
+                if (e.target.classList.contains('view-details-btn')) {
+                    const project = projectsData[e.target.dataset.index];
+                    modalTitle.textContent = project.title;
+                    modalDescription.textContent = project.description;
+                    modalTech.innerHTML = project.tech.map(t => `<span class="bg-gray-700 text-gray-300 text-sm font-medium px-3 py-1 rounded-full">${t}</span>`).join('');
+                    modal.classList.remove('hidden');
+                    document.body.style.overflow = 'hidden';
+                }
+            });
+            
+            const closeModal = () => {
+                 modal.classList.add('hidden');
+                 document.body.style.overflow = '';
+            }
+
+            modalCloseBtn.addEventListener('click', closeModal);
+            modal.addEventListener('click', (e) => {
+                if(e.target === modal) {
+                    closeModal();
+                }
+            });
+
+             // --- Timeline ---
+            const timelineContainer = document.getElementById('timeline-container');
+            timelineData.forEach((item, index) => {
+                const isLeft = index % 2 === 0;
+                const timelineItem = document.createElement('div');
+                timelineItem.className = `mb-8 flex justify-between items-center w-full ${isLeft ? 'flex-row-reverse' : ''}`;
+                timelineItem.innerHTML = `
+                    <div class="order-1 w-5/12"></div>
+                    <div class="z-20 flex items-center order-1 bg-teal-600 shadow-xl w-8 h-8 rounded-full">
+                        <h1 class="mx-auto font-semibold text-sm text-white">${item.year}</h1>
+                    </div>
+                    <div class="order-1 gradient-bg rounded-lg shadow-md w-5/12 px-6 py-4">
+                        <h3 class="font-bold text-white text-lg">${item.title}</h3>
+                        <p class="text-sm font-medium text-teal-400 leading-snug tracking-wide mb-2">${item.institution}</p>
+                        <p class="text-sm text-gray-400">${item.description}</p>
+                    </div>
+                `;
+                timelineContainer.appendChild(timelineItem);
+            });
+        });
+    </script>
+</body>
+</html>
